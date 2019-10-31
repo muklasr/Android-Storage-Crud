@@ -1,7 +1,12 @@
 package com.mr.sinaustorage;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -14,18 +19,42 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class ExternalStorageActivity extends AppCompatActivity {
     private EditText etContent;
     private TextView tvContent;
     public static final String FILENAME = "example.txt";
+    public static final int REQUEST_CODE_STORAGE = 100; //Yang penting lebih dari 0
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.activity_external_storage);
         etContent = findViewById(R.id.et_content);
         tvContent = findViewById(R.id.tv_content);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_CODE_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                }
+        }
+    }
+
+    public boolean checkStoragePermission(){
+        if (Build.VERSION.SDK_INT >= 23){
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE);
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     public void createFile(View view) {
